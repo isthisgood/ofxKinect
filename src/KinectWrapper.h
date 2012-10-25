@@ -95,6 +95,10 @@ namespace itg
             ofTexture& getTextureReference();
             
             State getState() const { return state; }
+            
+            ofVec3f getWorldCoordinateAt(int cx, int cy);
+            
+            ofxKinect& getKinect() { return kinect; }
         
         protected:
             State state;

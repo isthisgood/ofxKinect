@@ -52,6 +52,7 @@ namespace itg
                     rgbVideo.loadMovie(rgb);
                     rgbMedia = VIDEO;
                 }
+                state = DUMMY;
             }
             else ofLogError() << "Kinect wrapper already inited.";
         }
@@ -270,6 +271,24 @@ namespace itg
                     
                 case LIVE:
                     return kinect.getDepthTextureReference();
+                    break;
+                    
+                default:
+                    ofLogError() << "Not initialised.";
+                    break;
+            }
+        }
+        
+        ofVec3f KinectWrapper::getWorldCoordinateAt(int cx, int cy)
+        {
+            switch (state)
+            {
+                case DUMMY:
+                    return ofVec3f(cx, cy, 0);
+                    break;
+                
+                case LIVE:
+                    return kinect.getWorldCoordinateAt(cx, cy);
                     break;
                     
                 default:

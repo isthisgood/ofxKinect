@@ -107,7 +107,7 @@ void testApp::draw() {
 		contourFinder.draw(10, 320, 400, 300);
 		
 #ifdef USE_TWO_KINECTS
-		kinect2.draw(420, 320, 400, 300);
+		kinect2.drawDepth(420, 320, 400, 300);
 #endif
 	}
 	

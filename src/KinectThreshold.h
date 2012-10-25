@@ -43,7 +43,7 @@ namespace itg
         public:
             KinectThreshold();
             
-            void update();
+            virtual void update();
             cv::Mat& getThresholded() { return threshMat; }
             
             float getNearThresh() const { return nearThresh; }

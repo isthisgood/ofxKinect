@@ -59,6 +59,10 @@ public:
 	ofxKinect();
 	virtual ~ofxKinect();
 
+    float getReferencePixelSize();
+    
+    float getReferencePixelDistance();
+    
 /// \section Main
 
 	/// initialize resources, must be called before open()
@@ -271,6 +275,8 @@ public:
 	/// get the serial number of the next available device,
 	/// returns an empty string "" if nothing found
 	static string nextAvailableSerial();
+    
+    float depthLookup(short raw) { return depthLookupTable[raw]; }
 
 protected:
 
