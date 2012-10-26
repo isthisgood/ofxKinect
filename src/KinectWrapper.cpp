@@ -284,7 +284,7 @@ namespace itg
             switch (state)
             {
                 case DUMMY:
-                    return ofVec3f(cx, cy, 0);
+                    return ofVec3f(cx, cy, 800);
                     break;
                 
                 case LIVE:
