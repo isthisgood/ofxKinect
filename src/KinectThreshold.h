@@ -53,11 +53,13 @@ namespace itg
             void setFarThresh(float farThresh) { this->farThresh = farThresh; }
             
             bool isFrameNew();
+        
+        protected:
+            bool frameNewFlag;
             
         private:
             float nearThresh, farThresh;
             cv::Mat depthMat, threshMat, nearMat, farMat;
-            bool frameNewFlag;
         };
     }
 }
