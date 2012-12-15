@@ -53,6 +53,9 @@ namespace itg
             void setFarThresh(float farThresh) { this->farThresh = farThresh; }
             
             bool isFrameNew();
+            
+            float& getNearThreshRef() { return nearThresh; }
+            float& getFarThreshRef() { return farThresh; }
         
         protected:
             bool frameNewFlag;

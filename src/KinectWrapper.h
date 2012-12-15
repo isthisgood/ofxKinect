@@ -98,6 +98,8 @@ namespace itg
             
             ofVec3f getWorldCoordinateAt(int cx, int cy);
             
+            ofColor getColorAt(int cx, int cy);
+            
             ofxKinect& getKinect() { return kinect; }
         
         protected:

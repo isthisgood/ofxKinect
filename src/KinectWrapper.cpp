@@ -279,14 +279,56 @@ namespace itg
             }
         }
         
+        ofColor KinectWrapper::getColorAt(int cx, int cy)
+        {
+            switch (state)
+            {
+                case DUMMY:
+                {
+                    switch (rgbMedia)
+                    {
+                        case IMAGE:
+                            return rgbImage.getColor(cx, cy);
+                            break;
+                            
+                        case VIDEO:
+                        {
+                            unsigned char* pixels = rgbVideo.getPixels();
+                            unsigned idx = 3 * (cx + cy * (int)depthVideo.getWidth());
+                            return ofColor((int)pixels[idx], (int)pixels[idx + 1], (int)pixels[idx + 2]);
+                            break;
+                        }
+                                
+                        default:
+                            ofLogError() << "rgb media not set";
+                            break;
+
+                        break;
+                    }
+                }
+                    
+                case LIVE:
+                    return kinect.getColorAt(cx, cy);
+                    break;
+                    
+                default:
+                    ofLogError() << "Not initialised.";
+                    break;
+            }
+        }
+        
         ofVec3f KinectWrapper::getWorldCoordinateAt(int cx, int cy)
         {
             switch (state)
             {
                 case DUMMY:
-                    return ofVec3f(cx, cy, 800);
+                {
+                    unsigned char depthPixel = depthVideo.getPixels()[3 * (cx + cy * (int)depthVideo.getWidth())];
+                    float depth = ofMap(depthPixel, 0, 255, 1000, 0);
+                    return ofVec3f(cx, cy, depth);
                     break;
-                
+                }
+                    
                 case LIVE:
                     return kinect.getWorldCoordinateAt(cx, cy);
                     break;
