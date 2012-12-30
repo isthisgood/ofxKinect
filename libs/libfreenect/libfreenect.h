@@ -44,6 +44,10 @@ extern "C" {
 /// Value indicating that this pixel has no data, when using FREENECT_DEPTH_11BIT, FREENECT_DEPTH_10BIT, FREENECT_DEPTH_11BIT_PACKED, or FREENECT_DEPTH_10BIT_PACKED
 #define FREENECT_DEPTH_RAW_NO_VALUE 2047
 
+//Theo - we need to change this value to 334 for it to work for kinect model 1473 
+/// Size of zero plane either 322 ( older devices ) or 334 ( newer devices )
+#define FREENECT_ZERO_PLANE_SIZE 334
+
 /// Flags representing devices to open when freenect_open_device() is called.
 /// In particular, this allows libfreenect to grab only a subset of the devices
 /// in the Kinect, so you could (for instance) use libfreenect to handle audio

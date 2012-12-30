@@ -903,9 +903,9 @@ static int freenect_fetch_zero_plane_info(freenect_device *dev)
 	uint16_t cmd[5] = {0}; // Offset is the only field in this command, and it's 0
 
 	int res;
-	res = send_cmd(dev, 0x04, cmd, 10, reply, 322); //OPCODE_GET_FIXED_PARAMS = 4,
-	if (res != 322) {
-		FN_ERROR("freenect_fetch_zero_plane_info: send_cmd read %d bytes (expected 322)\n", res);
+	res = send_cmd(dev, 0x04, cmd, 10, reply, FREENECT_ZERO_PLANE_SIZE); //OPCODE_GET_FIXED_PARAMS = 4,
+	if (res != FREENECT_ZERO_PLANE_SIZE) {
+		FN_ERROR("freenect_fetch_zero_plane_info: send_cmd read %d bytes (expected %i)\n", res, FREENECT_ZERO_PLANE_SIZE);
 		return -1;
 	}
 

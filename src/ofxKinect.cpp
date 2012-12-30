@@ -621,9 +621,13 @@ void ofxKinect::grabVideoFrame(freenect_device *dev, void *video, uint32_t times
 
 //---------------------------------------------------------------------------
 void ofxKinect::threadedFunction(){
-
+	
+	//Theo: note a lot is disabled here ( led / motor ) as we don't have a motor device. 
+	// for some reason we need the usb command in freenect_update_tilt_state to keep frames coming in. 
+	// not ideal - but it works at the moment. 
+	
 	if (currentLed < 0) { 
-        freenect_set_led(kinectDevice, (freenect_led_options)ofxKinect::LED_GREEN); 
+		//freenect_set_led(kinectDevice, (freenect_led_options)ofxKinect::LED_GREEN); 
     }
 	
 	freenect_frame_mode videoMode = freenect_find_video_mode(FREENECT_RESOLUTION_MEDIUM, bIsVideoInfrared?FREENECT_VIDEO_IR_8BIT:FREENECT_VIDEO_RGB);
@@ -644,47 +648,51 @@ void ofxKinect::threadedFunction(){
 		return;
 	}
 
+	printf("entering while loop\n"); 
 	while(isThreadRunning()) {
-		
+
 		if(bTiltNeedsApplying) {
-			freenect_set_tilt_degs(kinectDevice, targetTiltAngleDeg);
+			//freenect_set_tilt_degs(kinectDevice, targetTiltAngleDeg);
 			bTiltNeedsApplying = false;
 		}
 		
 		if(bLedNeedsApplying) {
 			if(currentLed == ofxKinect::LED_DEFAULT) {
-				freenect_set_led(kinectDevice, (freenect_led_options)ofxKinect::LED_GREEN);
+				//freenect_set_led(kinectDevice, (freenect_led_options)ofxKinect::LED_GREEN);
 			}
 			else {
-				freenect_set_led(kinectDevice, (freenect_led_options)currentLed);
+				//freenect_set_led(kinectDevice, (freenect_led_options)currentLed);
 			}
 			bLedNeedsApplying = false;
 		}
 
 		freenect_update_tilt_state(kinectDevice);
+		
 		freenect_raw_tilt_state * tilt = freenect_get_tilt_state(kinectDevice);
-		currentTiltAngleDeg = freenect_get_tilt_degs(tilt);
+		//currentTiltAngleDeg = freenect_get_tilt_degs(tilt);
 
-		rawAccel.set(tilt->accelerometer_x, tilt->accelerometer_y, tilt->accelerometer_z);
+		//rawAccel.set(tilt->accelerometer_x, tilt->accelerometer_y, tilt->accelerometer_z);
 
 		double dx,dy,dz;
-		freenect_get_mks_accel(tilt, &dx, &dy, &dz);
+		//freenect_get_mks_accel(tilt, &dx, &dy, &dz);
 		mksAccel.set(dx, dy, dz);
 
 		// ... and $0.02 for the scheduler
 		ofSleepMillis(10);
 	}
+	printf("end of while loop\n"); 
+
 
 	// finish up a tilt on exit
 	if(bTiltNeedsApplying) {
-		freenect_set_tilt_degs(kinectDevice, targetTiltAngleDeg);
+		//freenect_set_tilt_degs(kinectDevice, targetTiltAngleDeg);
 		bTiltNeedsApplying = false;
 	}
 
 	freenect_stop_depth(kinectDevice);
 	freenect_stop_video(kinectDevice);
 	if (currentLed < 0) { 
-        freenect_set_led(kinectDevice, (freenect_led_options)ofxKinect::LED_YELLOW); 
+		//freenect_set_led(kinectDevice, (freenect_led_options)ofxKinect::LED_YELLOW); 
     }
 
 	kinectContext.close(*this);
