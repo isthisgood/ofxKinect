@@ -6,7 +6,7 @@ void testApp::setup() {
 	ofSetLogLevel(OF_LOG_VERBOSE);
 	
 	// enable depth->video image calibration
-	//kinect.setRegistration(true);
+	kinect.setRegistration(true);
     
 	kinect.init();
 	//kinect.init(true); // shows infrared instead of RGB video image

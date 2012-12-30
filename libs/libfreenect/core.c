@@ -141,7 +141,7 @@ FREENECTAPI int freenect_supported_subdevices(void) {
 }
 
 FREENECTAPI void freenect_select_subdevices(freenect_context *ctx, freenect_device_flags subdevs) {
-	ctx->enabled_subdevices = (freenect_device_flags)(subdevs & ( FREENECT_DEVICE_CAMERA
+	ctx->enabled_subdevices = (freenect_device_flags)(subdevs & ( FREENECT_DEVICE_CAMERA | FREENECT_DEVICE_MOTOR 
 #ifdef BUILD_AUDIO
 			| FREENECT_DEVICE_AUDIO
 #endif
