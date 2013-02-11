@@ -42,6 +42,7 @@ namespace itg
             if (state == PREINIT)
             {
                 this->depthVideo.loadMovie(depthVideo);
+                this->depthVideo.setLoopState(OF_LOOP_NORMAL);
                 if (rgb.find(".jpg") != string::npos || rgb.find(".png") != string::npos)
                 {
                     rgbImage.loadImage(rgb);
@@ -50,6 +51,7 @@ namespace itg
                 else
                 {
                     rgbVideo.loadMovie(rgb);
+                    rgbVideo.setLoopState(OF_LOOP_NORMAL);
                     rgbMedia = VIDEO;
                 }
                 state = DUMMY;
