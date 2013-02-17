@@ -101,6 +101,10 @@ namespace itg
             ofColor getColorAt(int cx, int cy);
             
             ofxKinect& getKinect() { return kinect; }
+            
+            void setDummyDepthPct(float pct);
+            
+            void setDummySpeed(float speed);
         
         protected:
             State state;

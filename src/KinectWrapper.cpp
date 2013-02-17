@@ -59,6 +59,16 @@ namespace itg
             else ofLogError() << "Kinect wrapper already inited.";
         }
         
+        void KinectWrapper::setDummySpeed(float speed)
+        {
+            if (state == DUMMY) depthVideo.setSpeed(speed);
+        }
+        
+        void KinectWrapper::setDummyDepthPct(float pct)
+        {
+            if (state == DUMMY) depthVideo.setPosition(pct);
+        }
+        
         void KinectWrapper::init(bool infrared, bool video, bool texture)
         {
             if (state == PREINIT)
