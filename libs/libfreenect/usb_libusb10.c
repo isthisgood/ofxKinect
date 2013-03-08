@@ -165,7 +165,10 @@ FN_INTERNAL int fnusb_open_subdevices(freenect_device *dev, int index)
 	dev->usb_cam.dev = NULL;
 	dev->usb_motor.parent = dev;
 	dev->usb_motor.dev = NULL;
+    dev->hasMotor = true;
+    dev->zeroPlaneSize = 322; 
 #ifdef BUILD_AUDIO
+    dev->hasAudio = true; 
 	dev->usb_audio.parent = dev;
 	dev->usb_audio.dev = NULL;
 #endif
@@ -246,8 +249,21 @@ FN_INTERNAL int fnusb_open_subdevices(freenect_device *dev, int index)
 				nr_mot++;
 			}
 		}
+        
+        //theo - crude way of distinguishing between 1473 device ( no motor ) and 1414 device - has motor
+        if( dev->usb_motor.dev == NULL ){
+            dev->hasMotor = false;
+            dev->hasAudio = false;
+            dev->zeroPlaneSize = 334;
+        }else{
+            dev->hasMotor = true;        
+            dev->zeroPlaneSize = 322;
+        }   
 
 #ifdef BUILD_AUDIO
+        
+        dev->hasAudio = true; 
+
 		// TODO: check that the firmware has already been loaded; if not, upload firmware.
 		// Search for the audio
 		if ((ctx->enabled_subdevices & FREENECT_DEVICE_AUDIO) && !dev->usb_audio.dev && desc.idProduct == PID_NUI_AUDIO) {
@@ -367,7 +383,7 @@ FN_INTERNAL int fnusb_open_subdevices(freenect_device *dev, int index)
 
 	// Check that each subdevice is either opened or not enabled.
 	if ( (dev->usb_cam.dev || !(ctx->enabled_subdevices & FREENECT_DEVICE_CAMERA))
-		&& (dev->usb_motor.dev || !(ctx->enabled_subdevices & FREENECT_DEVICE_MOTOR))
+		&& (dev->usb_motor.dev || !(ctx->enabled_subdevices & FREENECT_DEVICE_MOTOR) || (dev->hasMotor == false))
 #ifdef BUILD_AUDIO
 		&& (dev->usb_audio.dev || !(ctx->enabled_subdevices & FREENECT_DEVICE_AUDIO))
 #endif
@@ -378,7 +394,7 @@ FN_INTERNAL int fnusb_open_subdevices(freenect_device *dev, int index)
 			libusb_release_interface(dev->usb_cam.dev, 0);
 			libusb_close(dev->usb_cam.dev);
 		}
-		if (dev->usb_motor.dev) {
+		if (dev->usb_motor.dev && dev->hasMotor) {
 			libusb_release_interface(dev->usb_motor.dev, 0);
 			libusb_close(dev->usb_motor.dev);
 		}
@@ -402,7 +418,7 @@ FN_INTERNAL int fnusb_close_subdevices(freenect_device *dev)
 		libusb_close(dev->usb_cam.dev);
 		dev->usb_cam.dev = NULL;
 	}
-	if (dev->usb_motor.dev) {
+	if (dev->usb_motor.dev && dev->hasMotor) {
 		libusb_release_interface(dev->usb_motor.dev, 0);
 		libusb_close(dev->usb_motor.dev);
 		dev->usb_motor.dev = NULL;

@@ -199,6 +199,7 @@ typedef struct {
 #endif
 
 struct _freenect_device {
+
 	freenect_context *parent;
 	freenect_device *next;
 	void *user_data;
@@ -239,6 +240,10 @@ struct _freenect_device {
 	// Motor
 	fnusb_dev usb_motor;
 	freenect_raw_tilt_state raw_state;
+    
+    bool hasAudio;
+    bool hasMotor;
+    uint32_t zeroPlaneSize;
 };
 
 #endif

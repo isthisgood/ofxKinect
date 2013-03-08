@@ -77,7 +77,7 @@ FREENECTAPI int freenect_shutdown(freenect_context *ctx)
 FREENECTAPI int freenect_process_events(freenect_context *ctx)
 {
 	struct timeval timeout;
-	timeout.tv_sec = 60;
+	timeout.tv_sec = 5;
 	timeout.tv_usec = 0;
 	return freenect_process_events_timeout(ctx, &timeout);
 }

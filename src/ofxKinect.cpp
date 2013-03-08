@@ -203,9 +203,9 @@ bool ofxKinect::open(string serial) {
 	bGotData = false;
 	
 	freenect_set_user(kinectDevice, this);
-	freenect_set_depth_callback(kinectDevice, &grabDepthFrame);
+    freenect_set_depth_callback(kinectDevice, &grabDepthFrame);
 	freenect_set_video_callback(kinectDevice, &grabVideoFrame);
-	
+        
 	startThread(true, false); // blocking, not verbose
 	
 	return true;
@@ -214,6 +214,7 @@ bool ofxKinect::open(string serial) {
 //---------------------------------------------------------------------------
 void ofxKinect::close() {
 	if(isThreadRunning()) {
+        stopThread();
 		waitForThread(true);
 	}
 
@@ -622,7 +623,7 @@ void ofxKinect::grabVideoFrame(freenect_device *dev, void *video, uint32_t times
 //---------------------------------------------------------------------------
 void ofxKinect::threadedFunction(){
 
-	if (currentLed < 0) { 
+	if (currentLed < 0 && freenect_has_motor(kinectDevice) ) { 
         freenect_set_led(kinectDevice, (freenect_led_options)ofxKinect::LED_GREEN); 
     }
 	
@@ -645,45 +646,51 @@ void ofxKinect::threadedFunction(){
 	}
 
 	while(isThreadRunning()) {
-		
-		if(bTiltNeedsApplying) {
-			freenect_set_tilt_degs(kinectDevice, targetTiltAngleDeg);
-			bTiltNeedsApplying = false;
-		}
-		
-		if(bLedNeedsApplying) {
-			if(currentLed == ofxKinect::LED_DEFAULT) {
-				freenect_set_led(kinectDevice, (freenect_led_options)ofxKinect::LED_GREEN);
-			}
-			else {
-				freenect_set_led(kinectDevice, (freenect_led_options)currentLed);
-			}
-			bLedNeedsApplying = false;
-		}
+    		
+        if( freenect_has_motor(kinectDevice) ){
+        
+            if(bTiltNeedsApplying) {
+                freenect_set_tilt_degs(kinectDevice, targetTiltAngleDeg);
+                bTiltNeedsApplying = false;
+            }
+            
+            if(bLedNeedsApplying) {
+                if(currentLed == ofxKinect::LED_DEFAULT) {
+                    freenect_set_led(kinectDevice, (freenect_led_options)ofxKinect::LED_GREEN);
+                }
+                else {
+                    freenect_set_led(kinectDevice, (freenect_led_options)currentLed);
+                }
+                bLedNeedsApplying = false;
+            }
 
-		freenect_update_tilt_state(kinectDevice);
-		freenect_raw_tilt_state * tilt = freenect_get_tilt_state(kinectDevice);
-		currentTiltAngleDeg = freenect_get_tilt_degs(tilt);
+            freenect_update_tilt_state(kinectDevice);
+            freenect_raw_tilt_state * tilt = freenect_get_tilt_state(kinectDevice);
+            currentTiltAngleDeg = freenect_get_tilt_degs(tilt);
 
-		rawAccel.set(tilt->accelerometer_x, tilt->accelerometer_y, tilt->accelerometer_z);
+            rawAccel.set(tilt->accelerometer_x, tilt->accelerometer_y, tilt->accelerometer_z);
 
-		double dx,dy,dz;
-		freenect_get_mks_accel(tilt, &dx, &dy, &dz);
-		mksAccel.set(dx, dy, dz);
+            double dx,dy,dz;
+            freenect_get_mks_accel(tilt, &dx, &dy, &dz);
+            mksAccel.set(dx, dy, dz);
+        
+        }else{
+            freenect_process_events(kinectContext.getContext());
+        }
 
 		// ... and $0.02 for the scheduler
-		ofSleepMillis(10);
+		ofSleepMillis(2);
 	}
 
 	// finish up a tilt on exit
-	if(bTiltNeedsApplying) {
+	if(bTiltNeedsApplying && freenect_has_motor(kinectDevice) ) {
 		freenect_set_tilt_degs(kinectDevice, targetTiltAngleDeg);
 		bTiltNeedsApplying = false;
 	}
 
 	freenect_stop_depth(kinectDevice);
 	freenect_stop_video(kinectDevice);
-	if (currentLed < 0) { 
+	if (currentLed < 0 && freenect_has_motor(kinectDevice) ) { 
         freenect_set_led(kinectDevice, (freenect_led_options)ofxKinect::LED_YELLOW); 
     }
 

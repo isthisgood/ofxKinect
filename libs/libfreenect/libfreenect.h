@@ -514,6 +514,13 @@ FREENECTAPI int freenect_set_led(freenect_device *dev, freenect_led_options opti
 FREENECTAPI void freenect_get_mks_accel(freenect_raw_tilt_state *state, double* x, double* y, double* z);
 
 /**
+ * 
+ * @return Returns true for devices which have access to motor controls and false for devices ( eg 1473 ) which don't. 
+ */
+FREENECTAPI bool freenect_has_motor(freenect_device *dev);
+
+
+/**
  * Get the number of video camera modes supported by the driver.  This includes both RGB and IR modes.
  *
  * @return Number of video modes supported by the driver

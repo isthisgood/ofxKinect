@@ -39,6 +39,10 @@
 
 #define GRAVITY 9.80665
 
+bool freenect_has_motor(freenect_device *dev){
+    return dev->hasMotor;
+}
+
 freenect_raw_tilt_state* freenect_get_tilt_state(freenect_device *dev)
 {
 	return &dev->raw_state;
@@ -46,6 +50,8 @@ freenect_raw_tilt_state* freenect_get_tilt_state(freenect_device *dev)
 
 int freenect_update_tilt_state(freenect_device *dev)
 {
+    if( dev->hasMotor == false ) return 0; 
+    
 	freenect_context *ctx = dev->parent;
 	uint8_t buf[10];
 	uint16_t ux, uy, uz;
@@ -70,6 +76,8 @@ int freenect_update_tilt_state(freenect_device *dev)
 
 int freenect_set_tilt_degs(freenect_device *dev, double angle)
 {
+    if( dev->hasMotor == false ) return 0; 
+
 	int ret;
 	uint8_t empty[0x1];
 
@@ -82,6 +90,8 @@ int freenect_set_tilt_degs(freenect_device *dev, double angle)
 
 int freenect_set_led(freenect_device *dev, freenect_led_options option)
 {
+    if( dev->hasMotor == false ) return 0.0; 
+
 	int ret;
 	uint8_t empty[0x1];
 	ret = fnusb_control(&dev->usb_motor, 0x40, 0x06, (uint16_t)option, 0x0, empty, 0x0);

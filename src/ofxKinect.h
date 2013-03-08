@@ -328,7 +328,7 @@ private:
 	/// global statics shared between kinect instances
 	static ofxKinectContext kinectContext;
 
-	freenect_device* kinectDevice;      ///< kinect device handle
+	_freenect_device * kinectDevice;      ///< kinect device handle
 
 	ofShortPixels depthPixelsRawBack;	///< depth back
 	ofPixels videoPixelsBack;			///< rgb back
