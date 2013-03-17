@@ -56,13 +56,19 @@ namespace itg
             
             float& getNearThreshRef() { return nearThresh; }
             float& getFarThreshRef() { return farThresh; }
+            
+            void setFindContours(bool findContours) { this->findContours = findContours; }
+            
+            ofxCv::ContourFinder& getContourFinder() { return contourFinder; }
         
         protected:
             bool frameNewFlag;
             
         private:
+            bool findContours;
             float nearThresh, farThresh;
             cv::Mat depthMat, threshMat, nearMat, farMat;
+            ofxCv::ContourFinder contourFinder;
         };
     }
 }

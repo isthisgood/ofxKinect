@@ -43,16 +43,21 @@ namespace itg
             {
                 this->depthVideo.loadMovie(depthVideo);
                 this->depthVideo.setLoopState(OF_LOOP_NORMAL);
-                if (rgb.find(".jpg") != string::npos || rgb.find(".png") != string::npos)
+                this->depthVideo.play();
+                if (!rgb.empty())
                 {
-                    rgbImage.loadImage(rgb);
-                    rgbMedia = IMAGE;
-                }
-                else
-                {
-                    rgbVideo.loadMovie(rgb);
-                    rgbVideo.setLoopState(OF_LOOP_NORMAL);
-                    rgbMedia = VIDEO;
+                    if (rgb.find(".jpg") != string::npos || rgb.find(".png") != string::npos)
+                    {
+                        rgbImage.loadImage(rgb);
+                        rgbMedia = IMAGE;
+                    }
+                    else
+                    {
+                        rgbVideo.loadMovie(rgb);
+                        rgbVideo.setLoopState(OF_LOOP_NORMAL);
+                        rgbVideo.play();
+                        rgbMedia = VIDEO;
+                    }
                 }
                 state = DUMMY;
             }

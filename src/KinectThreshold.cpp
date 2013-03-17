@@ -37,7 +37,7 @@ namespace itg
     {
         using namespace ofxCv;
         
-        KinectThreshold::KinectThreshold() : nearThresh(1.f), farThresh(0.f), KinectWrapper()
+        KinectThreshold::KinectThreshold() : nearThresh(1.f), farThresh(0.f), findContours(false), KinectWrapper()
         {
         }
         
@@ -69,6 +69,7 @@ namespace itg
                 ofxCv::threshold(depthMat, nearMat, 255 * nearThresh, true);
                 ofxCv::threshold(depthMat, farMat, 255 * farThresh);
                 threshMat = nearMat & farMat;
+                if (findContours) contourFinder.findContours(threshMat);
             }
         }
         
