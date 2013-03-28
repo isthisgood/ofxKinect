@@ -65,6 +65,9 @@ ofxKinect::ofxKinect() {
 	targetTiltAngleDeg = 0;
 	currentTiltAngleDeg = 0;
 	bTiltNeedsApplying = false;
+    
+    currentLed = -1;
+    bLedNeedsApplying = false;
 	
 	lastDeviceId = -1;
 	tryCount = 0;
@@ -457,6 +460,16 @@ float ofxKinect::getCurrentCameraTiltAngle() {
 	return currentTiltAngleDeg;
 }
 
+//--------------------------------------------------------------------
+
+void ofxKinect::setLed(ofxKinect::LedMode mode) {
+	if(mode == currentLed) {
+		return;
+	}
+    bLedNeedsApplying = true;
+    currentLed = mode;
+}
+
 //------------------------------------
 void ofxKinect::setUseTexture(bool bUse){
 	bUseTexture = bUse;
@@ -622,7 +635,10 @@ void ofxKinect::grabVideoFrame(freenect_device *dev, void *video, uint32_t times
 //---------------------------------------------------------------------------
 void ofxKinect::threadedFunction(){
 
-	freenect_set_led(kinectDevice, LED_GREEN);
+	if (currentLed < 0) { 
+        freenect_set_led(kinectDevice, (freenect_led_options)ofxKinect::LED_GREEN); 
+    }
+	
 	freenect_frame_mode videoMode = freenect_find_video_mode(FREENECT_RESOLUTION_MEDIUM, bIsVideoInfrared?FREENECT_VIDEO_IR_8BIT:FREENECT_VIDEO_RGB);
 	freenect_set_video_mode(kinectDevice, videoMode);
 	freenect_frame_mode depthMode = freenect_find_depth_mode(FREENECT_RESOLUTION_MEDIUM, bUseRegistration?FREENECT_DEPTH_REGISTERED:FREENECT_DEPTH_MM);
@@ -642,14 +658,24 @@ void ofxKinect::threadedFunction(){
 	}
 
 	while(isThreadRunning()) {
+		
 		if(bTiltNeedsApplying) {
 			freenect_set_tilt_degs(kinectDevice, targetTiltAngleDeg);
 			bTiltNeedsApplying = false;
 		}
+		
+		if(bLedNeedsApplying) {
+			if(currentLed == ofxKinect::LED_DEFAULT) {
+				freenect_set_led(kinectDevice, (freenect_led_options)ofxKinect::LED_GREEN);
+			}
+			else {
+				freenect_set_led(kinectDevice, (freenect_led_options)currentLed);
+			}
+			bLedNeedsApplying = false;
+		}
 
 		freenect_update_tilt_state(kinectDevice);
 		freenect_raw_tilt_state * tilt = freenect_get_tilt_state(kinectDevice);
-
 		currentTiltAngleDeg = freenect_get_tilt_degs(tilt);
 
 		rawAccel.set(tilt->accelerometer_x, tilt->accelerometer_y, tilt->accelerometer_z);
@@ -670,7 +696,9 @@ void ofxKinect::threadedFunction(){
 
 	freenect_stop_depth(kinectDevice);
 	freenect_stop_video(kinectDevice);
-	freenect_set_led(kinectDevice, LED_YELLOW);
+	if (currentLed < 0) { 
+        freenect_set_led(kinectDevice, (freenect_led_options)ofxKinect::LED_YELLOW); 
+    }
 
 	kinectContext.close(*this);
 	ofLog(OF_LOG_VERBOSE, "ofxKinect: Device %d connection closed", deviceId);
@@ -754,9 +782,8 @@ bool ofxKinectContext::open(ofxKinect& kinect, int id) {
 	kinects.insert(pair<int,ofxKinect*>(id, &kinect));
 	
 	// set kinect id & serial from bus id
-	int index = getDeviceIndex(id);
 	kinect.deviceId = id;
-	kinect.serial = deviceList[index].serial;
+	kinect.serial = deviceList[getDeviceIndex(id)].serial;
 
 	return true;
 }
@@ -782,10 +809,10 @@ bool ofxKinectContext::open(ofxKinect& kinect, string serial) {
 		ofLog(OF_LOG_ERROR, "ofxKinect: Could not open device %s", serial.c_str());
 		return false;
 	}
-	int id = getDeviceIndex(serial);
-	kinects.insert(pair<int,ofxKinect*>(id, &kinect));
-	kinect.deviceId = id;
-	kinect.serial = deviceList[id].serial;
+	int index = getDeviceIndex(serial);
+	kinects.insert(pair<int,ofxKinect*>(deviceList[index].id, &kinect));
+	kinect.deviceId = deviceList[index].id;
+	kinect.serial = serial;
 	
 	return true;
 }
@@ -813,10 +840,12 @@ void ofxKinectContext::close(ofxKinect& kinect) {
 }
 
 void ofxKinectContext::closeAll() {
-	std::map<int,ofxKinect*>::iterator iter;
-	for(iter = kinects.begin(); iter != kinects.end(); ++iter) {
-		iter->second->close();
-	}
+	// make copy of map to avoid invalidating iter when calling close()
+	std::map<int,ofxKinect*> kinectsCopy(kinects);
+    std::map<int,ofxKinect*>::iterator iter;
+    for(iter = kinectsCopy.begin(); iter != kinectsCopy.end(); ++iter) {
+        iter->second->close();
+    }
 }
 
 //---------------------------------------------------------------------------
