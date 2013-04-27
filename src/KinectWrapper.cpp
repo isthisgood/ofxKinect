@@ -358,20 +358,35 @@ namespace itg
         
         ofTexture& KinectWrapper::getTextureReference()
         {
-            switch (rgbMedia)
+            switch (state)
             {
-                case IMAGE:
-                    return rgbImage.getTextureReference();
+                case DUMMY:
+                {
+                    switch (rgbMedia)
+                    {
+                        case IMAGE:
+                            return rgbImage.getTextureReference();
+                            break;
+                            
+                        case VIDEO:
+                            return rgbVideo.getTextureReference();
+                            break;
+                            
+                        default:
+                            ofLogError() << "rgb media not set";
+                            break;
+                    }
                     break;
-                    
-                case VIDEO:
-                    return rgbVideo.getTextureReference();
+                }
+                
+                case LIVE:
+                    return kinect.getTextureReference();
                     break;
                     
                 default:
-                    ofLogError() << "rgb media not set";
                     break;
             }
+            
             
         }
     }
