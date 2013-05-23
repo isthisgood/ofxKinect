@@ -33,7 +33,6 @@
 #include "ofMain.h"
 
 #include "libfreenect-registration.h"
-#include "freenect_internal.h"
 
 #define OFX_KINECT_GRAVITY 9.80665
 
@@ -288,14 +287,16 @@ void ofxKinect::update() {
 
 float ofxKinect::getReferencePixelSize()
 {
-    if (kinectDevice) return kinectDevice->registration.zero_plane_info.reference_pixel_size;
-    return 0;
+    //if (kinectDevice) return kinectDevice->registration.zero_plane_info.reference_pixel_size;
+	//return 0;
+	return 0.1042;
 }
 
 float ofxKinect::getReferencePixelDistance()
 {
-    if (kinectDevice) return kinectDevice->registration.zero_plane_info.reference_distance;
-    return 0;
+    //if (kinectDevice) return kinectDevice->registration.zero_plane_info.reference_distance;
+	//return 0;
+	return 120;
 }
 
 //------------------------------------
