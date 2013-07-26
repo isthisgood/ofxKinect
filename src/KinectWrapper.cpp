@@ -204,6 +204,25 @@ namespace itg
         }
         
         /// get the pixels of the most recent depth frame
+        ofShortPixels& KinectWrapper::getRawDepthPixelsRef()
+        {
+            switch (state)
+            {
+                case DUMMY:
+                    ofLogError() << "Dummy doesn't have raw depth pixels.";
+                    break;
+                    
+                case LIVE:
+                    return kinect.getRawDepthPixelsRef();
+                    break;
+                    
+                default:
+                    ofLogError() << "Not initialised.";
+                    break;
+            }
+        }
+        
+        /// get the pixels of the most recent depth frame
         ofPixels& KinectWrapper::getDepthPixelsRef()
         {
             switch (state)

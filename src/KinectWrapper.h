@@ -82,6 +82,8 @@ namespace itg
             /// get the pixels of the most recent depth frame
             ofPixels& getDepthPixelsRef();       	///< grayscale values
             
+            ofShortPixels& getRawDepthPixelsRef();
+            
             /// get the distance in millimeters to a given point as a float array
             virtual float* getDistancePixels();
             
