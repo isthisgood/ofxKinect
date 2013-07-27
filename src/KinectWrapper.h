@@ -107,7 +107,7 @@ namespace itg
             void setDummyDepthPct(float pct);
             
             void setDummySpeed(float speed);
-        
+            
         protected:
             State state;
         
