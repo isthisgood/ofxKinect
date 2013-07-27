@@ -380,6 +380,7 @@ namespace itg
             switch (state)
             {
                 case DUMMY:
+                {
                     switch (rgbMedia)
                     {
                         case IMAGE:
@@ -394,7 +395,9 @@ namespace itg
                             ofLogError() << "rgb media not set";
                             break;
                     }
-                    
+                    break;
+                }
+                
                 case LIVE:
                     return kinect.getTextureReference();
                     break;
